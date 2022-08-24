@@ -14,19 +14,8 @@ import lombok.Setter;
 public class ReportRequestDto {
 
     private String prkplceNo;
-    private ReportType reportType;
+    private Integer reportType;
     private String reportTitle;
     private String reportText;
     private String reportCarNm;
-
-    public Report toEntity(){
-        return builder()
-                .prkplceNo(prkplceNo)
-                .reportType(reportType)
-                .reportTitle(reportTitle)
-                .reportText(reportText)
-                .reportCarNm(reportCarNm)
-                .build().toEntity();
-
-    }
 }
