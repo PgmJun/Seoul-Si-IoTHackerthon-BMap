@@ -38,7 +38,7 @@ public class CSVParser {
 
         try {
             //utf-8 형태로 csv 파일 파싱
-            CSVReader csvReader = new CSVReader(new InputStreamReader(new FileInputStream(path + "\\src\\main\\java\\jh\\ParkingService\\csv\\data.csv"), "EUC-KR"));
+            CSVReader csvReader = new CSVReader(new InputStreamReader(new FileInputStream(path + "\\src\\main\\java\\daone\\bmap\\csv\\data.csv"), "EUC-KR"));
             csvReader.readNext(); // 컬럼명은 저장되지 않도록 한 줄 읽기
 
             do {    //파일에서 데이터를 읽어 파싱하고 Park 객체로 만들어 ArrayList 에 넣는다.

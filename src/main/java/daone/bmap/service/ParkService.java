@@ -29,16 +29,34 @@ public class ParkService {
     public List<ParkDto> findParkingLotByAddr(String address, String lat, String lng) {
         List<ParkDto> result = new ArrayList<>();
         try {
-            List<Park> parkList = parkRepository.findByAddr(address, lat, lng);
+            String sqlAddress = "%"+address+"%";
+            List<Park> parkList = parkRepository.findByAddr(sqlAddress, lat, lng);
 
             for (Park p : parkList) {
                 ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(p);
                 result.add(parkDto);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("::ERROR:: ParkService.java -> findParkingLotByAddr");
         }
         return result;
+    }
+
+    public List<ParkDto> findParkingLotByLoc(Double lat, Double lng){
+        List<ParkDto> result = new ArrayList<>();
+        try {
+            List<Park> parkList = parkRepository.findByLocation(lat, lng);
+            for (Park p : parkList) {
+                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(p);
+                result.add(parkDto);
+            }
+            return result;
+        } catch (Exception e) {
+            log.error("::ERROR:: ParkService.java -> findParkingLotByLoc");
+        }
+        return result;
+
     }
 
     public List<ParkDto> findParkingLotAll() {
