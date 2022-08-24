@@ -15,29 +15,10 @@ public interface ParkRepository extends JpaRepository<Park, Long> {
     List<Park> findByAddr(String address, String lat, String lng);
 
     //findByLocation : 입력받은 위도(lat) 경도(lng)의 (+-n)값 사이에 있는 주차장 데이터를 DB에서 추출하여 리턴
-    @Query("SELECT p FROM Park p WHERE p.latitude BETWEEN ?1 - ?3 AND ?1 + ?3 AND p.longitude BETWEEN ?2 - ?3 AND ?2 + ?3")
-    List<Park> findByLocation(Double lat, Double lng, Double n);
+    @Query("SELECT p FROM Park p WHERE p.latitude BETWEEN ?1 - 0.02 AND ?1 + 0.02 AND p.longitude BETWEEN ?2 - 0.02 AND ?2 + 0.02")
+    List<Park> findByLocation(Double lat, Double lng);
 
     //findAll : DB에서 모든 주차장 데이터를 추출하여 리턴
     List<Park> findAll();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

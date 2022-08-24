@@ -41,6 +41,22 @@ public class ParkService {
         return result;
     }
 
+    public List<ParkDto> findParkingLotByLoc(Double lat, Double lng){
+        List<ParkDto> result = new ArrayList<>();
+        try {
+            List<Park> parkList = parkRepository.findByLocation(lat, lng);
+            for (Park p : parkList) {
+                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(p);
+                result.add(parkDto);
+            }
+            return result;
+        } catch (Exception e) {
+            log.error("::ERROR:: ParkService.java -> findParkingLotByLoc");
+        }
+        return result;
+
+    }
+
     public List<ParkDto> findParkingLotAll() {
         List<ParkDto> result = new ArrayList<>();
         try {
