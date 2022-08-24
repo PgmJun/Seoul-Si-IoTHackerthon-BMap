@@ -24,10 +24,10 @@ public class ReportController {
         try {
             Report report = ReportMapper.mapper.reportRequestDtoToEntity(requestDto);
             reportService.save(report);
-            return ResponseEntity.ok("신고 등록 완료");
+            return ResponseEntity.ok("신고 접수가 완료되었습니다!");
         } catch (Exception e){
             log.error("::ERROR:: ReportController.java -> saveReport");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("신고 실패", HttpStatus.NOT_FOUND);
         }
     }
 
