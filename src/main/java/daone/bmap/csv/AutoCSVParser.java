@@ -19,7 +19,7 @@ public class AutoCSVParser {
 
         Runtime runtime = Runtime.getRuntime();
         try {
-            Process p1 = runtime.exec("cmd /c start D:\\project\\ParkingService\\src\\main\\java\\jh\\ParkingService\\csv\\autoCsvInstall.bat");
+            Process p1 = runtime.exec("cmd /c start D:\\github\\Seoul-Si-IoTHackerthon-BMap\\src\\main\\java\\daone\\bmap\\csv\\autoCsvInstall.bat");
             InputStream is = p1.getInputStream();
             int i = 0;
             while ((i = is.read()) != -1) {
