@@ -48,7 +48,7 @@ public class ParkController {
     @GetMapping("/address")
     public ResponseEntity<?> findParkingDataByAddress(@RequestBody ParkAddrSearchDto data){
         try {
-            List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLat(), data.getLng());
+            List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLatitude(), data.getLongitude());
             if(parkList.isEmpty())
                 return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else
@@ -63,7 +63,7 @@ public class ParkController {
     @GetMapping("/location")
     public ResponseEntity<?> findParkingDataByLocation(@RequestBody ParkLocSearchDto data) {
         try {
-            List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLat(), data.getLng());
+            List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
             if(parkList.isEmpty())
                 return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             else
