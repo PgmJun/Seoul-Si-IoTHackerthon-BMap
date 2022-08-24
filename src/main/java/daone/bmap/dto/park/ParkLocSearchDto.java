@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ParkLocSearchDto {
-    Double lat;
-    Double lng;
+    Double latitude;
+    Double longitude;
 }

@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class ParkAddrSearchDto {
     String address;
-    String lat;
-    String lng;
+    String latitude;
+    String longitude;
 }
