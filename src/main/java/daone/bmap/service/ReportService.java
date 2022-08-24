@@ -17,9 +17,9 @@ public class ReportService {
     private final ReportRepository reportRepository;
 
 
-//    Report save(Report report){
-//
-//    }
+    public void save(Report report){
+        reportRepository.save(report);
+    }
 //
 //    List<Report> findReportByreportId(Long reportId){
 //

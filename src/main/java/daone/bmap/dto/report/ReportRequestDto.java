@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Getter
-public class ReportDto {
+public class ReportRequestDto {
 
     private String prkplceNo;
     private ReportType reportType;
