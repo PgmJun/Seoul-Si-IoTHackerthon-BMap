@@ -1,6 +1,7 @@
 package daone.bmap.api;
 
 import daone.bmap.domain.park.Park;
+import daone.bmap.dto.park.ParkAddrSearchDto;
 import daone.bmap.dto.park.ParkDto;
 import daone.bmap.service.ParkService;
 import lombok.RequiredArgsConstructor;
@@ -32,10 +33,11 @@ public class ParkController {
         }
     }
 
+    //검색으로
     @GetMapping("/address")
-    public ResponseEntity<List<ParkDto>> findParkingDataByAddress(){
+    public ResponseEntity<List<ParkDto>> findParkingDataByAddress(ParkAddrSearchDto data){
         try {
-            List<ParkDto> parkList = parkService.findParkingLotAll();
+            List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLat(), data.getLng());
             return ResponseEntity.ok(parkList);
         } catch (Exception e){
             log.error("::ERROR:: ParkController.java -> findAllParkingData");
