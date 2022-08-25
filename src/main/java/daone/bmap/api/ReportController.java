@@ -3,6 +3,7 @@ package daone.bmap.api;
 import daone.bmap.domain.park.Park;
 import daone.bmap.domain.report.Report;
 import daone.bmap.domain.report.ReportType;
+import daone.bmap.dto.report.ReportMapper;
 import daone.bmap.dto.report.ReportRequestDto;
 import daone.bmap.dto.report.ReportResponseDto;
 import daone.bmap.service.ParkService;
@@ -55,24 +56,32 @@ public class ReportController {
         }
     }
 
-//    @GetMapping("/find/{reportId}")
-//    public ResponseEntity<?> findReportDataByPno(@PathVariable Long reportId){
-//        try {
-//            // Id가 reportId와 일치하는 신고 데이터 조회
-//            Optional<Report> opReport = reportService.findReportByreportId(reportId);
-//
-//            // 신고 데이터를 찾지 못하면 NOT_FOUND 발생
-//            if(opReport.isEmpty()){
-//                log.error("::ERROR:: ReportController.java -> findReportDataByPno / The requested data does not exist");
-//                return new ResponseEntity<>("잘못된 reportId", HttpStatus.NOT_FOUND);
-//            }
-//
-//            return new ResponseEntity<>(opReport.get(), HttpStatus.OK);
-//        }catch (Exception e){
-//            log.error("::ERROR:: ReportController.java -> saveReport");
-//            return new ResponseEntity<>("ReportData 조회 실패", HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @GetMapping("/find/{reportId}")
+    public ResponseEntity<?> findReportDataByPno(@PathVariable Long reportId){
+        try {
+            // Id가 reportId와 일치하는 신고 데이터 조회
+            Optional<Report> opReport = reportService.findReportByReportId(reportId);
+
+            // 신고 데이터를 찾지 못하면 NOT_FOUND 발생
+            if(opReport.isEmpty()){
+                log.error("::ERROR:: ReportController.java -> findReportDataByPno / The requested data does not exist");
+                return new ResponseEntity<>("잘못된 reportId", HttpStatus.NOT_FOUND);
+            }
+            ReportResponseDto result = getReportResponseDto(opReport);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("::ERROR:: ReportController.java -> saveReport");
+            return new ResponseEntity<>("ReportData 조회 실패", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //Report DTO와 Entity의 prkplceNo의 자료형변환해주는 메서드
+    private ReportResponseDto getReportResponseDto(Optional<Report> opReport) {
+        Report report = opReport.get();
+        ReportResponseDto result = ReportMapper.mapper.reportEntityToDto(report);
+        result.setPrkplceNo(report.getPark().getPrkplceNo());
+        return result;
+    }
 
     @GetMapping("/find/all")
     public ResponseEntity<?> findAllReportData(){
