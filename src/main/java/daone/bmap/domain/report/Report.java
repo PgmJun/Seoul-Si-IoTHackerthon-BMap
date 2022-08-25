@@ -1,10 +1,7 @@
 package daone.bmap.domain.report;
 
 import daone.bmap.domain.park.Park;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
