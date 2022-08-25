@@ -30,8 +30,7 @@ public class ParkService {
     }
 
     public Optional<Park> findParkingLotByNo(String prkplceNo) {
-        Optional<Park> opPark;
-        opPark = parkRepository.findByPrkplceNo(prkplceNo);
+        Optional<Park> opPark = parkRepository.findByPrkplceNo(prkplceNo);
         if(opPark.isEmpty())
             log.error("::INFO:: ParkService.java -> findParkingLotByNo / prkplceNo를 가진 주차장 데이터 찾지 못함. ");
 
