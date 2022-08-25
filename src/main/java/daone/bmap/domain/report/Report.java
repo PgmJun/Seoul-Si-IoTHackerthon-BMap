@@ -2,6 +2,7 @@ package daone.bmap.domain.report;
 
 import daone.bmap.domain.park.Park;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,4 +38,12 @@ public class Report {
     @Column(name = "reportCarNm")
     private String reportCarNm;
 
+    @Builder
+    public Report(Park park, ReportType reportType, String reportTitle, String reportText, String reportCarNm) {
+        this.park = park;
+        this.reportType = reportType;
+        this.reportTitle = reportTitle;
+        this.reportText = reportText;
+        this.reportCarNm = reportCarNm;
+    }
 }

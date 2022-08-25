@@ -9,4 +9,15 @@ public enum ReportType {
     public static ReportType from(String s){
         return ReportType.valueOf(s.toUpperCase());
     }
+
+    public static ReportType checkTypeCode(int code){
+        switch (code){
+            case 0:
+                return ReportType.ERROR;
+            case 1:
+                return ReportType.PARKING;
+            default:
+                return null;
+        }
+    }
 }
