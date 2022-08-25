@@ -30,7 +30,7 @@ public class ParkController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping("/find/all")
     public ResponseEntity<?> findAllParkingData(){
         try {
             List<ParkDto> parkList = parkService.findParkingLotAll();
@@ -45,7 +45,7 @@ public class ParkController {
     }
 
     //주소,위도,경도로 주차장 찾기
-    @GetMapping("/address")
+    @GetMapping("/find/address")
     public ResponseEntity<?> findParkingDataByAddress(@RequestBody ParkAddrSearchDto data){
         try {
             List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLatitude(), data.getLongitude());
@@ -60,7 +60,7 @@ public class ParkController {
     }
 
     //위도,경도로 주차장 찾기
-    @GetMapping("/location")
+    @GetMapping("/find/location")
     public ResponseEntity<?> findParkingDataByLocation(@RequestBody ParkLocSearchDto data) {
         try {
             List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
