@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Transactional
@@ -22,14 +23,27 @@ public class ParkService {
     private final ParkRepository parkRepository;
     private final EntityManager em;
 
+
+    //
     public void saveData(Park park) {
         parkRepository.save(park);
+    }
+
+    public Optional<Park> findParkingLotByNo(String prkplceNo) {
+        Optional<Park> opPark;
+        opPark = parkRepository.findByPrkplceNo(prkplceNo);
+        if(opPark.isEmpty())
+            log.error("::INFO:: ParkService.java -> findParkingLotByNo / prkplceNo를 가진 주차장 데이터 찾지 못함. ");
+
+        return opPark;
+
+
     }
 
     public List<ParkDto> findParkingLotByAddr(String address, String lat, String lng) {
         List<ParkDto> result = new ArrayList<>();
         try {
-            String sqlAddress = "%"+address+"%";
+            String sqlAddress = "%" + address + "%";
             List<Park> parkList = parkRepository.findByAddr(sqlAddress, lat, lng);
 
             for (Park p : parkList) {
@@ -43,7 +57,7 @@ public class ParkService {
         return result;
     }
 
-    public List<ParkDto> findParkingLotByLoc(Double lat, Double lng){
+    public List<ParkDto> findParkingLotByLoc(Double lat, Double lng) {
         List<ParkDto> result = new ArrayList<>();
         try {
             List<Park> parkList = parkRepository.findByLocation(lat, lng);

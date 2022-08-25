@@ -3,11 +3,15 @@ package daone.bmap.domain.park;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 public interface ParkRepository extends JpaRepository<Park, Long> {
 
     Park save(Park park);
+
+    Optional<Park> findByPrkplceNo(String prkplceNo);
 
     //findByAddr : 입력어가 포함된 주차장 데이터를 DB에서 추출하여 리턴
     //Ex) "경기도" 입력 시 주소에 "경기도"가 포함 된 주차장 정보 리턴
