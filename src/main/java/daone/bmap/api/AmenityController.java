@@ -41,8 +41,8 @@ public class AmenityController {
         }
     }
 
-    @GetMapping("/find/prkplceNo")
-    public ResponseEntity<?> findAmenityDataByPrkplceNo(@RequestParam String prkplceNo){
+    @GetMapping("/find/{prkplceNo}")
+    public ResponseEntity<?> findAmenityDataByPrkplceNo(@PathVariable String prkplceNo){
         try{
             AmenityResponseDto result = amenityService.findAmenityDataByPrkplceNo(prkplceNo);
             return ResponseEntity.ok(result);
