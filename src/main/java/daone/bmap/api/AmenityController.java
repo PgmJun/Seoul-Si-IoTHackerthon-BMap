@@ -4,18 +4,22 @@ import daone.bmap.domain.amenity.Amenity;
 import daone.bmap.domain.amenity.AmenityRepository;
 import daone.bmap.domain.park.Park;
 import daone.bmap.dto.amenity.AmenityRequestDto;
+import daone.bmap.dto.amenity.AmenityResponseDto;
 import daone.bmap.dto.park.ParkDto;
 import daone.bmap.dto.park.ParkMapper;
 import daone.bmap.service.AmenityService;
 import daone.bmap.service.ParkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Parameter;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,6 +38,17 @@ public class AmenityController {
         }catch (Exception e){
             log.error("::ERROR:: AmenityController.java -> findParkingDataByAmenity");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/find/{prkplceNo}")
+    public ResponseEntity<?> findAmenityDataByPrkplceNo(@PathVariable String prkplceNo){
+        try{
+            AmenityResponseDto result = amenityService.findAmenityDataByPrkplceNo(prkplceNo);
+            return ResponseEntity.ok(result);
+        }catch (Exception e){
+            log.error("::ERROR:: AmenityController.java -> findAmenityDataByPrkplceNo");
+            return new ResponseEntity<>("편의시설 데이터 찾기 실패", HttpStatus.BAD_REQUEST);
         }
     }
 
