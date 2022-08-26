@@ -44,7 +44,7 @@ public class ParkController {
     }
 
     //주소,위도,경도로 주차장 찾기
-    @GetMapping("/find/address")
+    @PostMapping("/find/address")   // Get메서드는 Body사용 불가 -> GetMapping -> PostMapping으로 임시 변환
     public ResponseEntity<?> findParkingDataByAddress(@RequestBody ParkAddrSearchDto data) {
         try {
             List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLatitude(), data.getLongitude());
@@ -58,7 +58,7 @@ public class ParkController {
     }
 
     //위도,경도로 주차장 찾기
-    @GetMapping("/find/location")
+    @PostMapping("/find/location") // Get메서드는 Body사용 불가 -> GetMapping -> PostMapping으로 임시 변환
     public ResponseEntity<?> findParkingDataByLocation(@RequestBody ParkLocSearchDto data) {
         try {
             List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
