@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +34,17 @@ public class AmenityController {
         }catch (Exception e){
             log.error("::ERROR:: AmenityController.java -> findParkingDataByAmenity");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/save")
+    public ResponseEntity<?> saveAmenityData() {
+        try {
+            amenityService.injectDummyData();
+            return ResponseEntity.ok("장애인 편의 시설 데이터 저장 완료");
+        } catch (Exception e){
+            log.error("::ERROR:: AmenityController.java -> saveAmenityData");
+            return new ResponseEntity<>("장애인 편의 시설 데이터 저장 실패",HttpStatus.BAD_REQUEST);
         }
     }
 }
