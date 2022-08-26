@@ -1,6 +1,7 @@
 package daone.bmap.domain.amenity;
 
 import daone.bmap.domain.park.Park;
+import daone.bmap.dto.amenity.AmenityResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -61,5 +62,9 @@ public class Amenity {
         this.exGuidance = exGuidance;
         this.exTicketOffice = exTicketOffice;
         this.exRestroom = exRestroom;
+    }
+
+    public AmenityResponseDto toResponseDto(){
+        return new AmenityResponseDto(elevator,wideExit,ramp,accessRoads,wheelchairLift,brailleBlock,exGuidance,exTicketOffice,exRestroom);
     }
 }
