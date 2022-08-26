@@ -1,40 +1,47 @@
 package daone.bmap.dto.report;
 
 import daone.bmap.domain.report.Report;
-import daone.bmap.dto.report.ReportRequestDto.ReportRequestDtoBuilder;
+import daone.bmap.domain.report.Report.ReportBuilder;
+import daone.bmap.dto.report.ReportResponseDto.ReportResponseDtoBuilder;
 import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-08-25T00:21:44+0900",
+    date = "2022-08-25T21:54:46+0900",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.11 (Oracle Corporation)"
 )
 public class ReportMapperImpl implements ReportMapper {
 
     @Override
-    public ReportRequestDto reportEntityToRequestDto(Report report) {
+    public Report reportDtoToEntity(ReportResponseDto reportResponseDto) {
+        if ( reportResponseDto == null ) {
+            return null;
+        }
+
+        ReportBuilder report = Report.builder();
+
+        report.reportType( reportResponseDto.getReportType() );
+        report.reportTitle( reportResponseDto.getReportTitle() );
+        report.reportText( reportResponseDto.getReportText() );
+        report.reportCarNm( reportResponseDto.getReportCarNm() );
+
+        return report.build();
+    }
+
+    @Override
+    public ReportResponseDto reportEntityToDto(Report report) {
         if ( report == null ) {
             return null;
         }
 
-        ReportRequestDtoBuilder reportRequestDto = ReportRequestDto.builder();
+        ReportResponseDtoBuilder reportResponseDto = ReportResponseDto.builder();
 
-        reportRequestDto.reportType( report.getReportType() );
-        reportRequestDto.reportTitle( report.getReportTitle() );
-        reportRequestDto.reportText( report.getReportText() );
-        reportRequestDto.reportCarNm( report.getReportCarNm() );
+        reportResponseDto.reportId( report.getReportId() );
+        reportResponseDto.reportType( report.getReportType() );
+        reportResponseDto.reportTitle( report.getReportTitle() );
+        reportResponseDto.reportText( report.getReportText() );
+        reportResponseDto.reportCarNm( report.getReportCarNm() );
 
-        return reportRequestDto.build();
-    }
-
-    @Override
-    public Report reportRequestDtoToEntity(ReportRequestDto requestDto) {
-        if ( requestDto == null ) {
-            return null;
-        }
-
-        Report report = new Report();
-
-        return report;
+        return reportResponseDto.build();
     }
 }
