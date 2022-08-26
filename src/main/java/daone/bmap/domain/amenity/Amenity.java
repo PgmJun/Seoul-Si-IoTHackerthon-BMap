@@ -1,6 +1,7 @@
 package daone.bmap.domain.amenity;
 
 import daone.bmap.domain.park.Park;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -47,4 +48,18 @@ public class Amenity {
 
     @Column(name = "exRestroom")
     private boolean exRestroom;
+
+    @Builder
+    public Amenity(Park park, boolean elevator, boolean wideExit, boolean ramp, boolean accessRoads, boolean wheelchairLift, boolean brailleBlock, boolean exGuidance, boolean exTicketOffice, boolean exRestroom) {
+        this.park = park;
+        this.elevator = elevator;
+        this.wideExit = wideExit;
+        this.ramp = ramp;
+        this.accessRoads = accessRoads;
+        this.wheelchairLift = wheelchairLift;
+        this.brailleBlock = brailleBlock;
+        this.exGuidance = exGuidance;
+        this.exTicketOffice = exTicketOffice;
+        this.exRestroom = exRestroom;
+    }
 }
