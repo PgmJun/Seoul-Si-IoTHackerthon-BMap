@@ -11,7 +11,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @NoArgsConstructor
 @Getter
-@Table(name = "Amenity")
+@Table(name = "AMENITY")
 @Entity
 public class Amenity {
 
