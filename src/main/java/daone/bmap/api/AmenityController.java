@@ -19,19 +19,6 @@ import java.util.List;
 public class AmenityController {
     private final AmenityService amenityService;
 
-    @GetMapping("/find")
-    public ResponseEntity<?> findParkingDataByAmenity(@RequestBody AmenityRequestDto data){
-        try {
-            List<ParkDto> result = amenityService.findParkDataByAmenityData(data);
-            if(result.isEmpty())
-                return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            return ResponseEntity.ok(result);
-        }catch (Exception e){
-            log.error("::ERROR:: AmenityController.java -> findParkingDataByAmenity");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @GetMapping("/find/{prkplceNo}")
     public ResponseEntity<?> findAmenityDataByPrkplceNo(@PathVariable String prkplceNo){
         try{

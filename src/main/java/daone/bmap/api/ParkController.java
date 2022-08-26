@@ -1,15 +1,19 @@
 package daone.bmap.api;
 
+import daone.bmap.dto.amenity.AmenityRequestDto;
 import daone.bmap.dto.park.ParkAddrSearchDto;
 import daone.bmap.dto.park.ParkDto;
 import daone.bmap.dto.park.ParkLocSearchDto;
+import daone.bmap.service.AmenityService;
 import daone.bmap.service.ParkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -18,6 +22,7 @@ import java.util.List;
 @RestController
 public class ParkController {
     private final ParkService parkService;
+    private final AmenityService amenityService;
 
     @PutMapping("/save")
     public ResponseEntity<String> patchParkingData() {
@@ -40,6 +45,19 @@ public class ParkController {
         } catch (Exception e) {
             log.error("::ERROR:: ParkController.java -> findAllParkingData");
             return new ResponseEntity<>("주차장 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/find/amenity")
+    public ResponseEntity<?> findParkingDataByAmenity(@RequestBody AmenityRequestDto data){
+        try {
+            List<ParkDto> result = amenityService.findParkDataByAmenityData(data);
+            if(result.isEmpty())
+                return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(result);
+        }catch (Exception e){
+            log.error("::ERROR:: AmenityController.java -> findParkingDataByAmenity");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
