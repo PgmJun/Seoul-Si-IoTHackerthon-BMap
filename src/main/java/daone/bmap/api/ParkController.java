@@ -19,7 +19,7 @@ import java.util.List;
 public class ParkController {
     private final ParkService parkService;
 
-    @PutMapping
+    @PutMapping("/save")
     public ResponseEntity<String> patchParkingData() {
         try {
             parkService.saveParkData();
