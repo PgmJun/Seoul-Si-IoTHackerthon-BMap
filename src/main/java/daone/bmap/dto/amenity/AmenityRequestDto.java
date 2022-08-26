@@ -17,4 +17,6 @@ public class AmenityRequestDto {
     private boolean exGuidance;    // 시각장애인 유도 안내
     private boolean exTicketOffice;    // 장애인 전용 매표소
     private boolean wideRestroom;   // 장애인 전용 화장실
+    private Double longitude;
+    private Double latitude;
 }

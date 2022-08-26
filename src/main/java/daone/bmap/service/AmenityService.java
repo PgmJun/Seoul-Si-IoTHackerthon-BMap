@@ -30,7 +30,7 @@ public class AmenityService {
     private final ParkRepository parkRepository;
     private final EntityManager em;
 
-    public List<ParkDto> findAmenityData(AmenityRequestDto data) {
+    public List<ParkDto> findParkDataByAmenityData(AmenityRequestDto data) {
         List<ParkDto> result = new ArrayList<>();
         try {
             // 요청받은 장애인 편의시설을 가진 주차장의 편의시설 데이터 불러오기
