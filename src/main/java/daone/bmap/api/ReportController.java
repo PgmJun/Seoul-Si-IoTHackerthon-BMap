@@ -71,7 +71,7 @@ public class ReportController {
             return new ResponseEntity<>(result, HttpStatus.OK);
         }catch (Exception e){
             log.error("::ERROR:: ReportController.java -> saveReport");
-            return new ResponseEntity<>("ReportData 조회 실패", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("신고 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
         }
     }
 

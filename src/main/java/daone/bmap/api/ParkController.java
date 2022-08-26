@@ -19,57 +19,55 @@ import java.util.List;
 public class ParkController {
     private final ParkService parkService;
 
-    @PutMapping
-    public ResponseEntity<String> patchParkingData(){
+    @PutMapping("/save")
+    public ResponseEntity<String> patchParkingData() {
         try {
             parkService.saveParkData();
             return ResponseEntity.ok("주차장 데이터 패치 완료");
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("::ERROR:: ParkController.java -> patchParkingData");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("주차장 데이터 패치 실패", HttpStatus.NOT_FOUND);
         }
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> findAllParkingData(){
+    @GetMapping("/find/all")
+    public ResponseEntity<?> findAllParkingData() {
         try {
             List<ParkDto> parkList = parkService.findParkingLotAll();
-            if(parkList.isEmpty())
+            if (parkList.isEmpty())
                 return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            else
-                return ResponseEntity.ok(parkList);
-        } catch (Exception e){
+            return ResponseEntity.ok(parkList);
+        } catch (Exception e) {
             log.error("::ERROR:: ParkController.java -> findAllParkingData");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("주차장 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
         }
     }
 
     //주소,위도,경도로 주차장 찾기
-    @GetMapping("/address")
-    public ResponseEntity<?> findParkingDataByAddress(@RequestBody ParkAddrSearchDto data){
+    @GetMapping("/find/address")
+    public ResponseEntity<?> findParkingDataByAddress(@RequestBody ParkAddrSearchDto data) {
         try {
             List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLatitude(), data.getLongitude());
-            if(parkList.isEmpty())
+            if (parkList.isEmpty())
                 return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
             return ResponseEntity.ok(parkList);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("::ERROR:: ParkController.java -> findParkingDataByAddress");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("주차장 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
         }
     }
 
     //위도,경도로 주차장 찾기
-    @GetMapping("/location")
+    @GetMapping("/find/location")
     public ResponseEntity<?> findParkingDataByLocation(@RequestBody ParkLocSearchDto data) {
         try {
             List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
-            if(parkList.isEmpty())
+            if (parkList.isEmpty())
                 return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            else
-                return ResponseEntity.ok(parkList);
-        } catch (Exception e){
+            return ResponseEntity.ok(parkList);
+        } catch (Exception e) {
             log.error("::ERROR:: ParkController.java -> findParkingDataByLocation");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("주차장 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
         }
     }
 }
