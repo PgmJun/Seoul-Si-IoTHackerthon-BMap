@@ -35,8 +35,6 @@ public class ParkService {
             log.error("::INFO:: ParkService.java -> findParkingLotByNo / prkplceNo를 가진 주차장 데이터 찾지 못함. ");
 
         return opPark;
-
-
     }
 
     public List<ParkDto> findParkingLotByAddr(String address, String lat, String lng) {
@@ -50,7 +48,6 @@ public class ParkService {
                 result.add(parkDto);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("::ERROR:: ParkService.java -> findParkingLotByAddr");
         }
         return result;

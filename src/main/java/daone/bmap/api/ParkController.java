@@ -51,8 +51,7 @@ public class ParkController {
             List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLatitude(), data.getLongitude());
             if(parkList.isEmpty())
                 return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            else
-                return ResponseEntity.ok(parkList);
+            return ResponseEntity.ok(parkList);
         } catch (Exception e){
             log.error("::ERROR:: ParkController.java -> findParkingDataByAddress");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
