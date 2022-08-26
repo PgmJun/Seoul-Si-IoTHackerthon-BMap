@@ -1,31 +1,34 @@
 spring:
-
   datasource:
-    url: ${MYSQL_URL}
-    username: ${MYSQL_USERNAME}
-    password: ${MYSQL_PW}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      maximum-pool-size: 30
+    url: ${db-url}
+    username: ${db-username}
+    password: ${db-password}
 
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
 
-    hibernate:
-      ddl-auto: update
-      naming:
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    generate-ddl: true
-    open-in-view: false
-
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
 server:
-  port: 8082
+  port: 8080
+
+api:
+  serviceKey: ${api-key}
+  type: ${api-type}
+  numOfRows: ${api-numOfRows}
+

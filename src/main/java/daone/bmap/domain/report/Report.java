@@ -9,12 +9,11 @@ import static javax.persistence.FetchType.LAZY;
 
 @Getter
 @NoArgsConstructor
-@Table(name = "report")
 @Entity
 public class Report {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reportId")
     private Long reportId;
 

@@ -10,7 +10,6 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-@Table(name = "park")
 @Entity
 public class Park {
 

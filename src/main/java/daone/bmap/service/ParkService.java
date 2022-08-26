@@ -1,11 +1,11 @@
 package daone.bmap.service;
 
 import com.opencsv.exceptions.CsvValidationException;
-import daone.bmap.csv.CSVParser;
 import daone.bmap.domain.park.Park;
 import daone.bmap.domain.park.ParkRepository;
 import daone.bmap.dto.park.ParkDto;
 import daone.bmap.dto.park.ParkMapper;
+import daone.bmap.tools.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ import java.util.NoSuchElementException;
 @Service
 public class ParkService {
     private final ParkRepository parkRepository;
+    private final JsonParser jsonParser;
     private final EntityManager em;
 
 
@@ -47,14 +48,14 @@ public class ParkService {
         return getParkDtoList(parkRepository.findAll());
     }
 
-    public void saveParkData() throws CsvValidationException, IOException {
+    @Transactional
+    public void saveParkData() throws IOException {
         try {
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
             em.createQuery("DELETE FROM Park").executeUpdate();
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
 
-            CSVParser csvParser = new CSVParser(em);
-            csvParser.read();
+            jsonParser.parseJsonParkData();
         } catch (Exception e) {
             throw e;
         }

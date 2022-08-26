@@ -12,12 +12,11 @@ import static javax.persistence.FetchType.LAZY;
 
 @NoArgsConstructor
 @Getter
-@Table(name = "amenity")
 @Entity
 public class Amenity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long amenityId;
 
     @OneToOne(fetch = LAZY)
