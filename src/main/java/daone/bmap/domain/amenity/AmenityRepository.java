@@ -9,6 +9,8 @@ import java.util.Optional;
 public interface AmenityRepository extends JpaRepository<Amenity, Long> {
 
     Amenity save(Amenity amenity);
+
+
     List<Amenity> findByElevatorAndRampAndAccessRoadsAndWheelchairLiftAndBrailleBlockAndExGuidanceAndExTicketOffice(boolean elevator, boolean ramp, boolean accessRoads, boolean wheelchairLift, boolean brailleBlock, boolean exGuidance, boolean exTicketOffice);
 
     Optional<Amenity> findByPark(Park park);

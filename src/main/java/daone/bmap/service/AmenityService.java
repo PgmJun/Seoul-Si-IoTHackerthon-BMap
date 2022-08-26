@@ -11,14 +11,12 @@ import daone.bmap.dto.park.ParkDto;
 import daone.bmap.dto.park.ParkMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Slf4j
 @Transactional
@@ -30,19 +28,72 @@ public class AmenityService {
     private final ParkRepository parkRepository;
     private final EntityManager em;
 
+    //    public List<ParkDto> findParkDataByAmenityData(AmenityRequestDto data) {
+//        List<ParkDto> result = new ArrayList<>();
+//        try {
+//            // 요청받은 장애인 편의시설을 가진 주차장의 편의시설 데이터 불러오기
+//            List<Amenity> amenityList = amenityRepository.findByElevatorAndRampAndAccessRoadsAndWheelchairLiftAndBrailleBlockAndExGuidanceAndExTicketOffice(data.isElevator(), data.isRamp(), data.isAccessRoads(), data.isWheelchairLift(), data.isBrailleBlock(), data.isExGuidance(), data.isExTicketOffice());
+//
+//            // 편의시설 데이터를 이용해 parkDto 불러오기
+//            for (Amenity amenity : amenityList) {
+//                Park parkData = parkService.findParkingLotByNo(amenity.getPark().getPrkplceNo()).get();
+//                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(parkData);
+//                result.add(parkDto);
+//            }
+//        } catch (Exception e) {
+//            log.error("::ERROR:: AmenityService.java -> findAmenityData");
+//        }
+//        return result;
+//    }
     public List<ParkDto> findParkDataByAmenityData(AmenityRequestDto data) {
         List<ParkDto> result = new ArrayList<>();
-        try {
-            // 요청받은 장애인 편의시설을 가진 주차장의 편의시설 데이터 불러오기
-            List<Amenity> amenityList = amenityRepository.findByElevatorAndRampAndAccessRoadsAndWheelchairLiftAndBrailleBlockAndExGuidanceAndExTicketOffice(data.isElevator(), data.isRamp(), data.isAccessRoads(), data.isWheelchairLift(), data.isBrailleBlock(), data.isExGuidance(), data.isExTicketOffice());
 
-            // 편의시설 데이터를 이용해 parkDto 불러오기
-            for (Amenity amenity : amenityList) {
-                Park parkData = parkService.findParkingLotByNo(amenity.getPark().getPrkplceNo()).get();
-                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(parkData);
-                result.add(parkDto);
+        try {
+            List<String> trueList = new ArrayList<>();
+            if (data.isElevator()) trueList.add("a.elevator");
+            if (data.isWideExit()) trueList.add("a.wideExit");
+            if (data.isRamp()) trueList.add("a.ramp");
+            if (data.isAccessRoads()) trueList.add("a.accessRoads");
+            if (data.isWheelchairLift()) trueList.add("a.wheelchairLift");
+            if (data.isBrailleBlock()) trueList.add("a.brailleBlock");
+            if (data.isExGuidance()) trueList.add("a.exGuidance");
+            if (data.isExTicketOffice()) trueList.add("a.exTicketOffice");
+
+            String where = " ";
+            for (int i = 0; i < trueList.size(); i++) {
+                where += (trueList.get(i) + "=1 AND ");
             }
+            where += "a.park IN";
+            List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
+            where += "(";
+            for (int i = 0; i < parkList.size(); i++) {
+                if (i == parkList.size() - 1)
+                    where += ("'" + parkList.get(i).getPrkplceNo()+"'");
+                else
+                    where += ("'" + parkList.get(i).getPrkplceNo() + "',");
+            }
+            where += ")";
+            String jsql = "SELECT a FROM Amenity a WHERE" + where;
+            System.out.println("jsql = " + jsql);
+            List<Amenity> amenityList = em.createQuery(jsql).getResultList();
+            for (Amenity amenity : amenityList) {
+                System.out.println("amenity.getAmenityId() = " + amenity.getAmenityId());
+                System.out.println("amenity.getPark().getPrkplceNo() = " + amenity.getPark().getPrkplceNo());
+            }
+
+            for (Amenity amenity : amenityList) {
+                Optional<Park> opPark = parkService.findParkingLotByNo(amenity.getPark().getPrkplceNo());
+                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(opPark.get());
+                result.add(parkDto);
+
+            }
+            if (result.isEmpty()) {
+                log.error("::INFO:: AmenityService.java -> findParkDataByAmenityData / 검색 조건에 해당하는 주차장 데이터가 존재하지 않습니다");
+                return null;
+            }
+
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("::ERROR:: AmenityService.java -> findAmenityData");
         }
         return result;
@@ -70,12 +121,12 @@ public class AmenityService {
     public AmenityResponseDto findAmenityDataByPrkplceNo(String prkplceNo) {
         Optional<Park> opPark = parkService.findParkingLotByNo(prkplceNo);
         if (opPark.isEmpty()) {
-            log.error("::INFO:: ReportService.java -> findAmenityDataByPrkplceNo / 존재하지 않는 prkplceNo");
+            log.error("::INFO:: AmenityService.java -> findAmenityDataByPrkplceNo / 존재하지 않는 prkplceNo");
             return null;
         }
         Optional<Amenity> opAmenity = amenityRepository.findByPark(opPark.get());
-        if(opAmenity.isEmpty()){
-            log.error("::INFO:: ReportService.java -> findAmenityDataByPrkplceNo / 존재하지 않는 Amenity 데이터");
+        if (opAmenity.isEmpty()) {
+            log.error("::INFO:: AmenityService.java -> findAmenityDataByPrkplceNo / 존재하지 않는 Amenity 데이터");
             return null;
         }
         return opAmenity.get().toResponseDto();
