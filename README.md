@@ -157,11 +157,10 @@ H2DB, MySQL
 <br>
 
 **[ 개발 기간 ]** 2022/08/23 ~ 2022/08/27
+
 <br>
 
 📑**Notion**: https://www.notion.so/IoT-97c3d4b04ed94fbe8ff58554dec4f188
-
-<br>
 
 📑**참가후기**: https://pgmjun.tistory.com/78
 
