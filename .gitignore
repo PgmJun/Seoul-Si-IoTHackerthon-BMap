@@ -38,3 +38,6 @@ out/
 ### VS Code ###
 .vscode/
 !/bmapAws/
+bmapAws/bmap secretManager.txt
+bmapAws/bmap_key.ppk
+bmapAws/new_user_credentials.csv
