@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -26,12 +27,9 @@ public class ReportService {
         reportRepository.save(report);
     }
 
-    public Optional<Report> findReportByReportId(Long reportId) {
-        Optional<Report> opReport = reportRepository.findReportByreportId(reportId);
-        if (opReport.isEmpty())
-            log.error("::INFO:: ReportService.java -> findReportByreportId / reportId 가진 신고 데이터 찾지 못함. ");
-
-        return opReport;
+    public Report findReportByReportId(Long reportId) {
+        return reportRepository.findReportByreportId(reportId)
+                .orElseThrow(() -> new NoSuchElementException("Report with reportId:" + reportId + " does not exist"));
     }
 
     public List<ReportResponseDto> findReportAll() {

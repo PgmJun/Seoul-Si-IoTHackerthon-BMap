@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -24,17 +25,9 @@ public class ParkService {
     private final EntityManager em;
 
 
-    //
-    public void saveData(Park park) {
-        parkRepository.save(park);
-    }
-
-    public Optional<Park> findParkingLotByNo(String prkplceNo) {
-        Optional<Park> opPark = parkRepository.findByPrkplceNo(prkplceNo);
-        if(opPark.isEmpty())
-            log.error("::INFO:: ParkService.java -> findParkingLotByNo / prkplceNo를 가진 주차장 데이터 찾지 못함. ");
-
-        return opPark;
+    public Park findParkingLotByNo(String prkplceNo) {
+        return parkRepository.findByPrkplceNo(prkplceNo)
+                .orElseThrow(() -> new NoSuchElementException("Parking lot with prkplceNo:" + prkplceNo + " does not exist"));
     }
 
     public List<ParkDto> findParkingLotByAddr(String address, String lat, String lng) {
