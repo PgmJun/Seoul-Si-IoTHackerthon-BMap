@@ -36,7 +36,7 @@ public class AmenityService {
             String jsql = createJsqlToFindParkingLotsByAmenityList(data, findAmenityList);
             List<Amenity> amenityList = em.createQuery(jsql).getResultList();
 
-            ParkEntityToDto(result, amenityList);
+            findParkEntityAndToDto(result, amenityList);
 
             if (result.isEmpty()) {
                 log.error("::INFO:: AmenityService.java -> findParkDataByAmenityData / 검색 조건에 해당하는 주차장 데이터가 존재하지 않습니다");
@@ -49,7 +49,7 @@ public class AmenityService {
         return result;
     }
 
-    private void ParkEntityToDto(List<ParkDto> result, List<Amenity> amenityList) {
+    private void findParkEntityAndToDto(List<ParkDto> result, List<Amenity> amenityList) {
         for (Amenity amenity : amenityList) {
             Optional<Park> opPark = parkService.findParkingLotByNo(amenity.getPark().getPrkplceNo());
             ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(opPark.get());
