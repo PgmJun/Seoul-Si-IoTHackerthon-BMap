@@ -20,24 +20,14 @@ public class AmenityController {
     private final AmenityService amenityService;
 
     @GetMapping("/find/{prkplceNo}")
-    public ResponseEntity<?> findAmenityDataByPrkplceNo(@PathVariable String prkplceNo){
-        try{
-            AmenityResponseDto result = amenityService.findAmenityDataByPrkplceNo(prkplceNo);
-            return ResponseEntity.ok(result);
-        }catch (Exception e){
-            log.error("::ERROR:: AmenityController.java -> findAmenityDataByPrkplceNo");
-            return new ResponseEntity<>("편의시설 데이터 찾기 실패", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<AmenityResponseDto> findAmenityDataByPrkplceNo(@PathVariable String prkplceNo) {
+        AmenityResponseDto result = amenityService.findAmenityDataByPrkplceNo(prkplceNo);
+        return new ResponseEntity(result, HttpStatus.OK);
     }
 
     @PutMapping("/save")
     public ResponseEntity<?> saveAmenityData() {
-        try {
-            amenityService.injectDummyData();
-            return ResponseEntity.ok("장애인 편의 시설 데이터 저장 완료");
-        } catch (Exception e){
-            log.error("::ERROR:: AmenityController.java -> saveAmenityData");
-            return new ResponseEntity<>("장애인 편의 시설 데이터 저장 실패",HttpStatus.BAD_REQUEST);
-        }
+        amenityService.injectDummyData();
+        return ResponseEntity.ok("장애인 편의 시설 데이터 저장 완료");
     }
 }

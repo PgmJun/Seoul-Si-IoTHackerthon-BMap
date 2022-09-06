@@ -49,16 +49,8 @@ public class ParkController {
     }
 
     @PostMapping("/find/amenity")
-    public ResponseEntity<?> findParkingDataByAmenity(@RequestBody AmenityRequestDto data){
-        try {
-            List<ParkDto> result = amenityService.findParkDataByAmenityData(data);
-            if(result.isEmpty())
-                return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            return ResponseEntity.ok(result);
-        }catch (Exception e){
-            log.error("::ERROR:: AmenityController.java -> findParkingDataByAmenity");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<List<ParkDto>> findParkingDataByAmenity(@RequestBody AmenityRequestDto data) {
+        return new ResponseEntity<>(amenityService.findParkDataByAmenityData(data), HttpStatus.OK);
     }
 
     //주소,위도,경도로 주차장 찾기
