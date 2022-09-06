@@ -44,7 +44,7 @@ public class AmenityService {
             }
 
         } catch (Exception e) {
-            log.error("::ERROR:: AmenityService.java -> findAmenityData");
+            log.error("::ERROR:: AmenityService.java -> findParkDataByAmenityData");
         }
         return result;
     }
