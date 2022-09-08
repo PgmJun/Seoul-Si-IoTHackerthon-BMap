@@ -24,7 +24,11 @@ public class ReportService {
 
 
     public void save(Report report) {
-        reportRepository.save(report);
+        try {
+            reportRepository.save(report);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     public Report findReportByReportId(Long reportId) {
@@ -33,24 +37,21 @@ public class ReportService {
     }
 
     public List<ReportResponseDto> findReportAll() {
-        List<ReportResponseDto> result = new ArrayList<>();
-
-        try {
-            List<Report> reportList = reportRepository.findAll();
-            setPrkplceNo(result, reportList);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("::ERROR:: ReportService.java -> findReportAll");
-        }
-        return result;
+        return setPrkplceNo(reportRepository.findAll());
     }
 
-    private void setPrkplceNo(List<ReportResponseDto> result, List<Report> reportList) {
-        int i = 0;
-        for (Report r : reportList) {
-            result.add(ReportMapper.mapper.reportEntityToDto(r));
-            result.get(i).setPrkplceNo(reportList.get(i).getPark().getPrkplceNo());
-            i++;
+    private List<ReportResponseDto> setPrkplceNo(List<Report> reportList) {
+        try {
+            List<ReportResponseDto> result = new ArrayList<>();
+            int i = 0;
+            for (Report r : reportList) {
+                result.add(ReportMapper.mapper.reportEntityToDto(r));
+                result.get(i).setPrkplceNo(reportList.get(i).getPark().getPrkplceNo());
+                i++;
+            }
+            return result;
+        } catch (Exception e) {
+            throw e;
         }
     }
 

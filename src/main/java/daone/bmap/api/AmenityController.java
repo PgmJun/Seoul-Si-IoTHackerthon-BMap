@@ -26,8 +26,8 @@ public class AmenityController {
     }
 
     @PutMapping("/save")
-    public ResponseEntity<?> saveAmenityData() {
+    public ResponseEntity<String> saveAmenityData() {
         amenityService.injectDummyData();
-        return ResponseEntity.ok("장애인 편의 시설 데이터 저장 완료");
+        return new ResponseEntity("장애인 편의 시설 데이터 저장 완료", HttpStatus.OK);
     }
 }
