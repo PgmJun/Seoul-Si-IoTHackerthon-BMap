@@ -30,13 +30,8 @@ public class ReportController {
 
     @PostMapping("/add")
     public ResponseEntity<String> saveReport(@RequestBody ReportRequestDto data) {
-        try {
-            reportService.save(new Report(parkService.findParkingLotByNo(data.getPrkplceNo()), ReportType.checkTypeCode(data.getReportType()), data.getReportTitle(), data.getReportText(), data.getReportCarNm()));
-            return ResponseEntity.ok("신고 접수가 완료되었습니다!");
-        } catch (Exception e) {
-            log.error("::ERROR:: ReportController.java -> saveReport");
-            return new ResponseEntity<>("신고 실패", HttpStatus.BAD_REQUEST);
-        }
+        reportService.save(new Report(parkService.findParkingLotByNo(data.getPrkplceNo()), ReportType.checkTypeCode(data.getReportType()), data.getReportTitle(), data.getReportText(), data.getReportCarNm()));
+        return ResponseEntity.ok("신고 접수가 완료되었습니다!");
     }
 
     @GetMapping("/find/{reportId}")
@@ -45,18 +40,11 @@ public class ReportController {
 
     }
 
-    //Report DTO와 Entity의 prkplceNo의 자료형변환해주는 메서드
-
-
     @GetMapping("/find/all")
     public ResponseEntity<?> findAllReportData() {
-        try {
-            List<ReportResponseDto> reportList = reportService.findReportAll();
-            return ResponseEntity.ok(reportList);
-        } catch (Exception e) {
-            log.error("::ERROR:: ReportController.java -> findAllReportData");
-            return new ResponseEntity<>("신고 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
-        }
+        List<ReportResponseDto> reportList = reportService.findReportAll();
+        return (!reportList.isEmpty()) ?
+                ResponseEntity.ok(reportList) : new ResponseEntity<>("Report data does not exist", HttpStatus.NOT_FOUND);
     }
 
 }
