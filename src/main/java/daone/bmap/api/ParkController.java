@@ -29,7 +29,7 @@ public class ParkController {
     @PutMapping("/save")
     public ResponseEntity<String> patchParkingData() throws CsvValidationException, IOException {
         parkService.saveParkData();
-        return new ResponseEntity("주차장 데이터 패치 완료", HttpStatus.OK);
+        return new ResponseEntity("주차장 데이터 패치 완료", HttpStatus.CREATED);
     }
 
     @GetMapping("/find/all")
@@ -39,7 +39,7 @@ public class ParkController {
                 ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot data does not exist", HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/find/amenity")
+    @PostMapping("/find/amenity")   // 검색파라미터가 너무 많으므로 @PostMapping,@RequestBody 를 사용하여 데이터 받기
     public ResponseEntity<?> findParkingDataByAmenity(@RequestBody AmenityRequestDto data) {
         List<ParkDto> parkList = amenityService.findParkDataByAmenityData(data);
         return (!parkList.isEmpty()) ?
@@ -48,16 +48,16 @@ public class ParkController {
     }
 
     //주소,위도,경도로 주차장 찾기
-    @PostMapping("/find/address")   // Get메서드는 Body사용 불가 -> GetMapping -> PostMapping으로 임시 변환
-    public ResponseEntity<?> findParkingDataByAddress(@RequestBody ParkAddrSearchDto data) {
+    @GetMapping("/find/address")
+    public ResponseEntity<?> findParkingDataByAddress(@ModelAttribute ParkAddrSearchDto data) {
         List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLatitude(), data.getLongitude());
         return (!parkList.isEmpty()) ?
                 ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot data does not exist", HttpStatus.NOT_FOUND);
     }
 
     //위도,경도로 주차장 찾기
-    @PostMapping("/find/location") // Get메서드는 Body사용 불가 -> GetMapping -> PostMapping으로 임시 변환
-    public ResponseEntity<?> findParkingDataByLocation(@RequestBody ParkLocSearchDto data) {
+    @GetMapping("/find/location")
+    public ResponseEntity<?> findParkingDataByLocation(@ModelAttribute ParkLocSearchDto data) {
         List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
         return (!parkList.isEmpty()) ?
                 ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot data does not exist", HttpStatus.NOT_FOUND);
