@@ -1,5 +1,6 @@
 package daone.bmap.api;
 
+import com.opencsv.exceptions.CsvValidationException;
 import daone.bmap.dto.amenity.AmenityRequestDto;
 import daone.bmap.dto.park.ParkAddrSearchDto;
 import daone.bmap.dto.park.ParkDto;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,67 +27,39 @@ public class ParkController {
     private final AmenityService amenityService;
 
     @PutMapping("/save")
-    public ResponseEntity<String> patchParkingData() {
-        try {
-            parkService.saveParkData();
-            return ResponseEntity.ok("주차장 데이터 패치 완료");
-        } catch (Exception e) {
-            log.error("::ERROR:: ParkController.java -> patchParkingData");
-            return new ResponseEntity<>("주차장 데이터 패치 실패", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<String> patchParkingData() throws CsvValidationException, IOException {
+        parkService.saveParkData();
+        return new ResponseEntity("주차장 데이터 패치 완료", HttpStatus.CREATED);
     }
 
     @GetMapping("/find/all")
     public ResponseEntity<?> findAllParkingData() {
-        try {
-            List<ParkDto> parkList = parkService.findParkingLotAll();
-            if (parkList.isEmpty())
-                return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            return ResponseEntity.ok(parkList);
-        } catch (Exception e) {
-            log.error("::ERROR:: ParkController.java -> findAllParkingData");
-            return new ResponseEntity<>("주차장 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
-        }
+        List<ParkDto> parkList = parkService.findParkingLotAll();
+        return (!parkList.isEmpty()) ?
+                ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot data does not exist", HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/find/amenity")
-    public ResponseEntity<?> findParkingDataByAmenity(@RequestBody AmenityRequestDto data){
-        try {
-            List<ParkDto> result = amenityService.findParkDataByAmenityData(data);
-            if(result.isEmpty())
-                return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            return ResponseEntity.ok(result);
-        }catch (Exception e){
-            log.error("::ERROR:: AmenityController.java -> findParkingDataByAmenity");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @PostMapping("/find/amenity")   // 검색파라미터가 너무 많으므로 @PostMapping,@RequestBody 를 사용하여 데이터 받기
+    public ResponseEntity<?> findParkingDataByAmenity(@RequestBody AmenityRequestDto data) {
+        List<ParkDto> parkList = amenityService.findParkDataByAmenityData(data);
+        return (!parkList.isEmpty()) ?
+                ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot with latitude: "+data.getLatitude()+", longitude: "+data.getLongitude()+" does not exist", HttpStatus.NOT_FOUND);
+
     }
 
     //주소,위도,경도로 주차장 찾기
-    @PostMapping("/find/address")   // Get메서드는 Body사용 불가 -> GetMapping -> PostMapping으로 임시 변환
-    public ResponseEntity<?> findParkingDataByAddress(@RequestBody ParkAddrSearchDto data) {
-        try {
-            List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLatitude(), data.getLongitude());
-            if (parkList.isEmpty())
-                return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            return ResponseEntity.ok(parkList);
-        } catch (Exception e) {
-            log.error("::ERROR:: ParkController.java -> findParkingDataByAddress");
-            return new ResponseEntity<>("주차장 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/find/address")
+    public ResponseEntity<?> findParkingDataByAddress(@ModelAttribute ParkAddrSearchDto data) {
+        List<ParkDto> parkList = parkService.findParkingLotByAddr(data.getAddress(), data.getLatitude(), data.getLongitude());
+        return (!parkList.isEmpty()) ?
+                ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot data does not exist", HttpStatus.NOT_FOUND);
     }
 
     //위도,경도로 주차장 찾기
-    @PostMapping("/find/location") // Get메서드는 Body사용 불가 -> GetMapping -> PostMapping으로 임시 변환
-    public ResponseEntity<?> findParkingDataByLocation(@RequestBody ParkLocSearchDto data) {
-        try {
-            List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
-            if (parkList.isEmpty())
-                return new ResponseEntity<>("데이터를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
-            return ResponseEntity.ok(parkList);
-        } catch (Exception e) {
-            log.error("::ERROR:: ParkController.java -> findParkingDataByLocation");
-            return new ResponseEntity<>("주차장 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/find/location")
+    public ResponseEntity<?> findParkingDataByLocation(@ModelAttribute ParkLocSearchDto data) {
+        List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
+        return (!parkList.isEmpty()) ?
+                ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot data does not exist", HttpStatus.NOT_FOUND);
     }
 }

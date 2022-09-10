@@ -15,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+import static daone.bmap.dto.report.ReportResponseDto.getReportResponseDto;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,71 +30,21 @@ public class ReportController {
 
     @PostMapping("/add")
     public ResponseEntity<String> saveReport(@RequestBody ReportRequestDto data) {
-        try {
-
-            // 입력받은 reportType 코드를 통해 ReportType 생성
-            ReportType reportType = ReportType.checkTypeCode(data.getReportType());
-
-            // reportType이 null일 경우 BAD_REQUEST 발생
-            if(reportType == null) {
-                log.error("::ERROR:: ReportController.java -> saveReport / 잘못된 reportType 코드");
-                return new ResponseEntity<>("잘못된 reportType", HttpStatus.BAD_REQUEST);
-            }
-
-            // 입력받은 PrkplceNo에 해당하는 주차장 데이터가 존재하는 지 Check
-            Optional<Park> opPark = parkService.findParkingLotByNo(data.getPrkplceNo());
-            if (opPark.isEmpty()) {
-                log.error("::ERROR:: ReportController.java -> saveReport / The requested data does not exist!");
-                return new ResponseEntity<>("잘못된 prkplceNo", HttpStatus.NOT_FOUND);
-            }
-            // 신고 데이터 저장
-            Park park = opPark.get();
-            Report report = new Report(park, reportType, data.getReportTitle(), data.getReportText(), data.getReportCarNm());
-            reportService.save(report);
-
-            return ResponseEntity.ok("신고 접수가 완료되었습니다!");
-        } catch (Exception e) {
-            log.error("::ERROR:: ReportController.java -> saveReport");
-            return new ResponseEntity<>("신고 실패", HttpStatus.BAD_REQUEST);
-        }
+        reportService.save(new Report(parkService.findParkingLotByNo(data.getPrkplceNo()), ReportType.checkTypeCode(data.getReportType()), data.getReportTitle(), data.getReportText(), data.getReportCarNm()));
+        return ResponseEntity.ok("신고 접수가 완료되었습니다!");
     }
 
     @GetMapping("/find/{reportId}")
-    public ResponseEntity<?> findReportDataByPno(@PathVariable Long reportId){
-        try {
-            // Id가 reportId와 일치하는 신고 데이터 조회
-            Optional<Report> opReport = reportService.findReportByReportId(reportId);
+    public ResponseEntity<ReportResponseDto> findReportDataByPno(@PathVariable Long reportId) {
+        return new ResponseEntity<>(getReportResponseDto(reportService.findReportByReportId(reportId)), HttpStatus.OK);
 
-            // 신고 데이터를 찾지 못하면 NOT_FOUND 발생
-            if(opReport.isEmpty()){
-                log.error("::ERROR:: ReportController.java -> findReportDataByPno / The requested data does not exist");
-                return new ResponseEntity<>("잘못된 reportId", HttpStatus.NOT_FOUND);
-            }
-            ReportResponseDto result = getReportResponseDto(opReport);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (Exception e){
-            log.error("::ERROR:: ReportController.java -> saveReport");
-            return new ResponseEntity<>("신고 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    //Report DTO와 Entity의 prkplceNo의 자료형변환해주는 메서드
-    private ReportResponseDto getReportResponseDto(Optional<Report> opReport) {
-        Report report = opReport.get();
-        ReportResponseDto result = ReportMapper.mapper.reportEntityToDto(report);
-        result.setPrkplceNo(report.getPark().getPrkplceNo());
-        return result;
     }
 
     @GetMapping("/find/all")
-    public ResponseEntity<?> findAllReportData(){
-        try{
-            List<ReportResponseDto> reportList = reportService.findReportAll();
-            return ResponseEntity.ok(reportList);
-        } catch (Exception e){
-            log.error("::ERROR:: ReportController.java -> findAllReportData");
-            return new ResponseEntity<>("신고 데이터 불러오기 실패", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> findAllReportData() {
+        List<ReportResponseDto> reportList = reportService.findReportAll();
+        return (!reportList.isEmpty()) ?
+                ResponseEntity.ok(reportList) : new ResponseEntity<>("Report data does not exist", HttpStatus.NOT_FOUND);
     }
 
 }

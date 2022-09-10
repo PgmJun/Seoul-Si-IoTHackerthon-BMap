@@ -25,7 +25,7 @@ public class CSVParser {
     }
 
 
-    public void read() {
+    public void read() throws CsvValidationException, IOException {
 
         //csv파일의 절대경로 구하기
         String path = System.getProperty("user.dir");   //csv파일 path 저장
@@ -94,10 +94,8 @@ public class CSVParser {
                     }
                 }
             } while (parkInfo != null);
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        } catch (EntityExistsException | CsvValidationException e) {
-            e.printStackTrace();
+        } catch (EntityExistsException | CsvValidationException | IOException e) {
+            throw e;
         }
     }
 

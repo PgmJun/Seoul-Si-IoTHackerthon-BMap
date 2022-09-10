@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -23,36 +24,34 @@ public class ReportService {
 
 
     public void save(Report report) {
-        reportRepository.save(report);
+        try {
+            reportRepository.save(report);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
-    public Optional<Report> findReportByReportId(Long reportId) {
-        Optional<Report> opReport = reportRepository.findReportByreportId(reportId);
-        if (opReport.isEmpty())
-            log.error("::INFO:: ReportService.java -> findReportByreportId / reportId 가진 신고 데이터 찾지 못함. ");
-
-        return opReport;
+    public Report findReportByReportId(Long reportId) {
+        return reportRepository.findReportByreportId(reportId)
+                .orElseThrow(() -> new NoSuchElementException("Report with reportId:" + reportId + " does not exist"));
     }
 
     public List<ReportResponseDto> findReportAll() {
-        List<ReportResponseDto> result = new ArrayList<>();
-
-        try {
-            List<Report> reportList = reportRepository.findAll();
-            setPrkplceNo(result, reportList);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("::ERROR:: ReportService.java -> findReportAll");
-        }
-        return result;
+        return setPrkplceNo(reportRepository.findAll());
     }
 
-    private void setPrkplceNo(List<ReportResponseDto> result, List<Report> reportList) {
-        int i = 0;
-        for (Report r : reportList) {
-            result.add(ReportMapper.mapper.reportEntityToDto(r));
-            result.get(i).setPrkplceNo(reportList.get(i).getPark().getPrkplceNo());
-            i++;
+    private List<ReportResponseDto> setPrkplceNo(List<Report> reportList) {
+        try {
+            List<ReportResponseDto> result = new ArrayList<>();
+            int i = 0;
+            for (Report r : reportList) {
+                result.add(ReportMapper.mapper.reportEntityToDto(r));
+                result.get(i).setPrkplceNo(reportList.get(i).getPark().getPrkplceNo());
+                i++;
+            }
+            return result;
+        } catch (Exception e) {
+            throw e;
         }
     }
 

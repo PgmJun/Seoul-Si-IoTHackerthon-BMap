@@ -1,5 +1,6 @@
 package daone.bmap.service;
 
+import com.opencsv.exceptions.CsvValidationException;
 import daone.bmap.csv.CSVParser;
 import daone.bmap.domain.park.Park;
 import daone.bmap.domain.park.ParkRepository;
@@ -11,9 +12,10 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Transactional
@@ -24,72 +26,45 @@ public class ParkService {
     private final EntityManager em;
 
 
-    //
-    public void saveData(Park park) {
-        parkRepository.save(park);
-    }
-
-    public Optional<Park> findParkingLotByNo(String prkplceNo) {
-        Optional<Park> opPark = parkRepository.findByPrkplceNo(prkplceNo);
-        if(opPark.isEmpty())
-            log.error("::INFO:: ParkService.java -> findParkingLotByNo / prkplceNo를 가진 주차장 데이터 찾지 못함. ");
-
-        return opPark;
+    public Park findParkingLotByNo(String prkplceNo) {
+        return parkRepository.findByPrkplceNo(prkplceNo)
+                .orElseThrow(() -> new NoSuchElementException("Parking lot with prkplceNo:" + prkplceNo + " does not exist"));
     }
 
     public List<ParkDto> findParkingLotByAddr(String address, String lat, String lng) {
-        List<ParkDto> result = new ArrayList<>();
-        try {
-            String sqlAddress = "%" + address + "%";
-            List<Park> parkList = parkRepository.findByAddr(sqlAddress, lat, lng);
-
-            for (Park p : parkList) {
-                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(p);
-                result.add(parkDto);
-            }
-        } catch (Exception e) {
-            log.error("::ERROR:: ParkService.java -> findParkingLotByAddr");
-        }
-        return result;
+        return getParkDtoList(parkRepository.findByAddr("%" + address + "%", lat, lng));
     }
 
     public List<ParkDto> findParkingLotByLoc(Double lat, Double lng) {
-        List<ParkDto> result = new ArrayList<>();
-        try {
-            List<Park> parkList = parkRepository.findByLocation(lat, lng);
-            for (Park p : parkList) {
-                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(p);
-                result.add(parkDto);
-            }
-            return result;
-        } catch (Exception e) {
-            log.error("::ERROR:: ParkService.java -> findParkingLotByLoc");
-        }
-        return result;
-
+        return getParkDtoList(parkRepository.findByLocation(lat, lng));
     }
 
     public List<ParkDto> findParkingLotAll() {
-        List<ParkDto> result = new ArrayList<>();
-        try {
-            List<Park> parkList = parkRepository.findAll();
-            for (Park p : parkList) {
-                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(p);
-                result.add(parkDto);
-            }
-        } catch (Exception e) {
-            log.error("::ERROR:: ParkService.java -> findParkingLotAll");
-        }
-        return result;
+        return getParkDtoList(parkRepository.findAll());
     }
 
-    public void saveParkData() {
-        em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
-        em.createQuery("DELETE FROM Park").executeUpdate();
-        em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+    public void saveParkData() throws CsvValidationException, IOException {
+        try {
+            em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
+            em.createQuery("DELETE FROM Park").executeUpdate();
+            em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
 
-        CSVParser csvParser = new CSVParser(em);
-        csvParser.read();
+            CSVParser csvParser = new CSVParser(em);
+            csvParser.read();
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //parkList 받아온 뒤 parkDtoList로 만들어 반환
+    private List<ParkDto> getParkDtoList(List<Park> parkList) {
+        try {
+            List<ParkDto> result = new ArrayList<>();
+            parkList.forEach(p -> result.add(ParkMapper.mapper.parkEntityToDto(p)));
+            return result;
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
 
