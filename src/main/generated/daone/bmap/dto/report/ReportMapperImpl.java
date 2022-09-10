@@ -7,8 +7,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-09-08T21:22:23+0900",
-    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.16.1 (Oracle Corporation)"
+    date = "2022-09-10T23:18:23+0900",
+    comments = "version: 1.4.2.Final, compiler: javac, environment: Java 11.0.11 (Oracle Corporation)"
 )
 public class ReportMapperImpl implements ReportMapper {
 
