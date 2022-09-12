@@ -32,25 +32,7 @@ public class AmenityService {
         List<ParkDto> result = new ArrayList<>();
         try {
             List<String> ExistAmenityList = getExistAmenityList(data);
-
-            String where = " ";
-            for (int i = 0; i < ExistAmenityList.size(); i++) {
-                where += (ExistAmenityList.get(i) + "=1 AND ");
-            }
-
-            where += "a.park IN";
-            List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
-            where += "(";
-            for (int i = 0; i < parkList.size(); i++) {
-                if (i == parkList.size() - 1)
-                    where += ("'" + parkList.get(i).getPrkplceNo()+"'");
-                else
-                    where += ("'" + parkList.get(i).getPrkplceNo() + "',");
-            }
-            where += ")";
-            String jsql = "SELECT a FROM Amenity a WHERE" + where;
-
-            List<Amenity> amenityList = em.createQuery(jsql).getResultList();
+            List<Amenity> amenityList = em.createQuery(createSelectQuery(data, ExistAmenityList)).getResultList();
             amenityList.forEach(a -> {
                 Park park = parkService.findParkingLotByNo(a.getPark().getPrkplceNo());
                 ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(park);
@@ -61,6 +43,26 @@ public class AmenityService {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    private String createSelectQuery(AmenityRequestDto data, List<String> ExistAmenityList) {
+        String query = "";
+        for (int i = 0; i < ExistAmenityList.size(); i++) {
+            query += (ExistAmenityList.get(i) + "=1 AND ");
+        }
+
+        query += "a.park IN";
+        List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
+        query += "(";
+
+        for (int i = 0; i < parkList.size(); i++) {
+            if (i == parkList.size() - 1)
+                query += ("'" + parkList.get(i).getPrkplceNo()+"'");
+            else
+                query += ("'" + parkList.get(i).getPrkplceNo() + "',");
+        }
+        query += ")";
+        return "SELECT a FROM Amenity a WHERE " + query;
     }
 
     private List<String> getExistAmenityList(AmenityRequestDto data) {
@@ -79,7 +81,7 @@ public class AmenityService {
     //더미데이터 넣기
     public void injectDummyData() {
         Random r = new Random();
-        r.setSeed(20220826);
+        r.setSeed(2022);
         try {
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
             em.createQuery("DELETE FROM Amenity").executeUpdate();
