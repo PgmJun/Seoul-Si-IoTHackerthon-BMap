@@ -32,7 +32,7 @@ public class AmenityService {
         List<ParkDto> result = new ArrayList<>();
         try {
             List<String> ExistAmenityList = getExistAmenityList(data);
-            List<Amenity> amenityList = em.createQuery(createSelectQuery(data, ExistAmenityList)).getResultList();
+            List<Amenity> amenityList = em.createQuery("SELECT a FROM Amenity a WHERE "+createSelectQuery(data, ExistAmenityList)).getResultList();
             amenityList.forEach(a -> {
                 Park park = parkService.findParkingLotByNo(a.getPark().getPrkplceNo());
                 ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(park);
@@ -47,22 +47,25 @@ public class AmenityService {
 
     private String createSelectQuery(AmenityRequestDto data, List<String> ExistAmenityList) {
         String query = "";
-        for (int i = 0; i < ExistAmenityList.size(); i++) {
+        for (int i = 0; i < ExistAmenityList.size(); i++)
             query += (ExistAmenityList.get(i) + "=1 AND ");
-        }
 
-        query += "a.park IN";
+        System.out.println("query1 = " + query);
+
+
         List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
-        query += "(";
-
+        //parkList가 isEmpty면 lat long에 해당하는 주차장이 없다는 예외 던지기
+        query += "a.park IN(";
+        System.out.println("query2 = " + query);
         for (int i = 0; i < parkList.size(); i++) {
             if (i == parkList.size() - 1)
-                query += ("'" + parkList.get(i).getPrkplceNo()+"'");
+                query += ("'" + parkList.get(i) + "'");
             else
-                query += ("'" + parkList.get(i).getPrkplceNo() + "',");
+                query += ("'" + parkList.get(i) + "',");
         }
         query += ")";
-        return "SELECT a FROM Amenity a WHERE " + query;
+        System.out.println("query3 = " + query);
+        return query;
     }
 
     private List<String> getExistAmenityList(AmenityRequestDto data) {
@@ -96,7 +99,7 @@ public class AmenityService {
 
     public AmenityResponseDto findAmenityDataByPrkplceNo(String prkplceNo) {
         return amenityRepository.findByPark(parkService.findParkingLotByNo(prkplceNo))
-                .orElseThrow(()-> new NoSuchElementException("Amenity with prkplceNo:" + prkplceNo + " does not exist"))
+                .orElseThrow(() -> new NoSuchElementException("Amenity with prkplceNo:" + prkplceNo + " does not exist"))
                 .toResponseDto();
     }
 }
