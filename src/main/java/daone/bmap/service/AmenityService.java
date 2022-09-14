@@ -33,6 +33,7 @@ public class AmenityService {
         try {
             List<String> ExistAmenityList = getExistAmenityList(data);
             List<Amenity> amenityList = em.createQuery("SELECT a FROM Amenity a WHERE "+createSelectQuery(data, ExistAmenityList)).getResultList();
+
             amenityList.forEach(a -> {
                 Park park = parkService.findParkingLotByNo(a.getPark().getPrkplceNo());
                 ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(park);
@@ -49,22 +50,20 @@ public class AmenityService {
         String query = "";
         for (int i = 0; i < ExistAmenityList.size(); i++)
             query += (ExistAmenityList.get(i) + "=1 AND ");
-
-        System.out.println("query1 = " + query);
-
-
+        
         List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
         //parkList가 isEmpty면 lat long에 해당하는 주차장이 없다는 예외 던지기
+        if(parkList.isEmpty())
+            throw new NoSuchElementException("Parking lot does not exist nearby at latitude:"+data.getLatitude()+", longitude:"+data.getLongitude());
+
         query += "a.park IN(";
-        System.out.println("query2 = " + query);
         for (int i = 0; i < parkList.size(); i++) {
-            if (i == parkList.size() - 1)
-                query += ("'" + parkList.get(i) + "'");
+            if(i == parkList.size()-1)
+                query += ("'" + parkList.get(i) + "')");
             else
                 query += ("'" + parkList.get(i) + "',");
         }
-        query += ")";
-        System.out.println("query3 = " + query);
+
         return query;
     }
 
