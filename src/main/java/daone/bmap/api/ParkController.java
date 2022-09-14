@@ -45,7 +45,7 @@ public class ParkController {
     public ResponseEntity<?> findParkingDataByAmenity(@RequestBody AmenityRequestDto data) {
         List<ParkDto> parkList = amenityService.findParkDataByAmenityData(data);
         return (!parkList.isEmpty()) ?
-                ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot with latitude: "+data.getLatitude()+", longitude: "+data.getLongitude()+" does not exist", HttpStatus.NOT_FOUND);
+                ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot does not exist with AmenityData And nearby latitude: "+data.getLatitude()+", longitude: "+data.getLongitude(), HttpStatus.NOT_FOUND);
 
     }
 
