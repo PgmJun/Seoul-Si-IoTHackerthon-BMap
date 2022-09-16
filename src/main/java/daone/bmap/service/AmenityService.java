@@ -27,73 +27,34 @@ public class AmenityService {
     private final ParkRepository parkRepository;
     private final EntityManager em;
 
+    // 요청받은 AmenityData를 가진 근처 주차장 찾기
     public List<ParkDto> findParkDataByAmenityData(AmenityRequestDto data) {
         List<ParkDto> result = new ArrayList<>();
 
         try {
-            List<String> trueList = new ArrayList<>();
-            if (data.isElevator()) trueList.add("a.elevator");
-            if (data.isWideExit()) trueList.add("a.wideExit");
-            if (data.isRamp()) trueList.add("a.ramp");
-            if (data.isAccessRoads()) trueList.add("a.accessRoads");
-            if (data.isWheelchairLift()) trueList.add("a.wheelchairLift");
-            if (data.isBrailleBlock()) trueList.add("a.brailleBlock");
-            if (data.isExGuidance()) trueList.add("a.exGuidance");
-            if (data.isExTicketOffice()) trueList.add("a.exTicketOffice");
+            List<String> existAmenityList = getExistAmenityList(data);
+            List<Park> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
 
-            String where = " ";
-            for (int i = 0; i < trueList.size(); i++) {
-                where += (trueList.get(i) + "=1 AND ");
-            }
-            where += "a.park IN";
-            List<ParkDto> parkList = parkService.findParkingLotDtoByLoc(data.getLatitude(), data.getLongitude());
-            where += "(";
-            for (int i = 0; i < parkList.size(); i++) {
-                if (i == parkList.size() - 1)
-                    where += ("'" + parkList.get(i).getPrkplceNo()+"'");
-                else
-                    where += ("'" + parkList.get(i).getPrkplceNo() + "',");
-            }
-            where += ")";
-            String jsql = "SELECT a FROM Amenity a WHERE" + where;
-            System.out.println("jsql = " + jsql);
-            List<Amenity> amenityList = em.createQuery(jsql).getResultList();
-            for (Amenity amenity : amenityList) {
-                System.out.println("amenity.getAmenityId() = " + amenity.getAmenityId());
-                System.out.println("amenity.getPark().getPrkplceNo() = " + amenity.getPark().getPrkplceNo());
-            }
-
-            for (Amenity amenity : amenityList) {
-                Park Park = parkService.findParkingLotByNo(amenity.getPark().getPrkplceNo());
-                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(Park);
+            List<Amenity> amenityList = em.createQuery(createWhereQuery(existAmenityList)).setParameter("parks",parkList).getResultList();
+            amenityList.forEach(amenity ->{
+                Park park = parkService.findParkingLotByNo(amenity.getPark().getPrkplceNo());
+                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(park);
                 result.add(parkDto);
-
-            }
-            if (result.isEmpty()) {
-                log.error("::INFO:: AmenityService.java -> findParkDataByAmenityData / 검색 조건에 해당하는 주차장 데이터가 존재하지 않습니다");
-                return null;
-            }
+            });
 
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("::ERROR:: AmenityService.java -> findAmenityData");
+            throw e;
         }
         return result;
     }
 
-    private String createSelectQuery(List<String> ExistAmenityList) {
-        String query = " ";
-        for (int i = 0; i < ExistAmenityList.size(); i++)
-                query += (ExistAmenityList.get(i) + "=1 AND ");
+    private String createWhereQuery(List<String> existAmenityList) {
+        String where = "";
+        for(String existAmenityData : existAmenityList)
+            where += (existAmenityData + "=1 AND ");
+        where += "a.park IN :parks";
 
-       return query;
-    }
-    private List<Park> getParkListNearbyLatAndLng(Double lat, Double lng){
-        List<Park> parkList = parkService.findParkingLotByLoc(lat, lng);
-        //parkList가 isEmpty면 lat long에 해당하는 주차장이 없다는 예외 던지기
-        if(parkList.isEmpty())
-            throw new NoSuchElementException("Parking lot does not exist nearby at latitude:"+lat+", longitude:"+lng);
-        return parkList;
+        return "SELECT a FROM Amenity a WHERE " + where;
     }
 
     private List<String> getExistAmenityList(AmenityRequestDto data) {
@@ -106,9 +67,9 @@ public class AmenityService {
         if (data.isBrailleBlock()) trueList.add("a.brailleBlock");
         if (data.isExGuidance()) trueList.add("a.exGuidance");
         if (data.isExTicketOffice()) trueList.add("a.exTicketOffice");
-
         return trueList;
     }
+
 
     //더미데이터 넣기
     public void injectDummyData() {
