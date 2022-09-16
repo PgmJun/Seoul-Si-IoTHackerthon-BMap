@@ -45,7 +45,7 @@ public class ParkController {
     public ResponseEntity<?> findParkingDataByAmenity(@RequestBody AmenityRequestDto data) {
         List<ParkDto> parkList = amenityService.findParkDataByAmenityData(data);
         return (!parkList.isEmpty()) ?
-                ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot with latitude: "+data.getLatitude()+", longitude: "+data.getLongitude()+" does not exist", HttpStatus.NOT_FOUND);
+                ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot does not exist with AmenityData And nearby latitude: "+data.getLatitude()+", longitude: "+data.getLongitude(), HttpStatus.NOT_FOUND);
 
     }
 
@@ -62,7 +62,7 @@ public class ParkController {
     @GetMapping("/find/location")
     @ApiOperation(value = "주차장 데이터 검색(내위치중심)", notes = "위도,경도 기준 근처 주차장 데이터 찾기(가까운 순서대로 정렬)")
     public ResponseEntity<?> findParkingDataByLocation(@ModelAttribute ParkLocSearchDto data) {
-        List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
+        List<ParkDto> parkList = parkService.findParkingLotDtoByLoc(data.getLatitude(), data.getLongitude());
         return (!parkList.isEmpty()) ?
                 ResponseEntity.ok(parkList) : new ResponseEntity<>("Parking lot data does not exist", HttpStatus.NOT_FOUND);
     }

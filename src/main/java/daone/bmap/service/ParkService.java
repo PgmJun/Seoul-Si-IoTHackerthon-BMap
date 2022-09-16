@@ -35,8 +35,12 @@ public class ParkService {
         return getParkDtoList(parkRepository.findByAddr("%" + address + "%", lat, lng));
     }
 
-    public List<ParkDto> findParkingLotByLoc(Double lat, Double lng) {
+    public List<ParkDto> findParkingLotDtoByLoc(Double lat, Double lng) {
         return getParkDtoList(parkRepository.findByLocation(lat, lng));
+    }
+
+    public List<Park> findParkingLotByLoc(Double lat, Double lng) {
+        return parkRepository.findByLocation(lat, lng);
     }
 
     public List<ParkDto> findParkingLotAll() {

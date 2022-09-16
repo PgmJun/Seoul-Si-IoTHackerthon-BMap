@@ -11,7 +11,6 @@ import daone.bmap.dto.park.ParkDto;
 import daone.bmap.dto.park.ParkMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -28,39 +27,34 @@ public class AmenityService {
     private final ParkRepository parkRepository;
     private final EntityManager em;
 
+    // 요청받은 AmenityData를 가진 근처 주차장 찾기
     public List<ParkDto> findParkDataByAmenityData(AmenityRequestDto data) {
         List<ParkDto> result = new ArrayList<>();
+
         try {
-            List<String> ExistAmenityList = getExistAmenityList(data);
+            List<String> existAmenityList = getExistAmenityList(data);
+            List<Park> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
 
-            String where = " ";
-            for (int i = 0; i < ExistAmenityList.size(); i++) {
-                where += (ExistAmenityList.get(i) + "=1 AND ");
-            }
-
-            where += "a.park IN";
-            List<ParkDto> parkList = parkService.findParkingLotByLoc(data.getLatitude(), data.getLongitude());
-            where += "(";
-            for (int i = 0; i < parkList.size(); i++) {
-                if (i == parkList.size() - 1)
-                    where += ("'" + parkList.get(i).getPrkplceNo()+"'");
-                else
-                    where += ("'" + parkList.get(i).getPrkplceNo() + "',");
-            }
-            where += ")";
-            String jsql = "SELECT a FROM Amenity a WHERE" + where;
-
-            List<Amenity> amenityList = em.createQuery(jsql).getResultList();
-            amenityList.forEach(a -> {
-                Park park = parkService.findParkingLotByNo(a.getPark().getPrkplceNo());
+            List<Amenity> amenityList = em.createQuery(createWhereQuery(existAmenityList)).setParameter("parks",parkList).getResultList();
+            amenityList.forEach(amenity ->{
+                Park park = parkService.findParkingLotByNo(amenity.getPark().getPrkplceNo());
                 ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(park);
                 result.add(parkDto);
             });
 
-            return result;
         } catch (Exception e) {
             throw e;
         }
+        return result;
+    }
+
+    private String createWhereQuery(List<String> existAmenityList) {
+        String where = "";
+        for(String existAmenityData : existAmenityList)
+            where += (existAmenityData + "=1 AND ");
+        where += "a.park IN :parks";
+
+        return "SELECT a FROM Amenity a WHERE " + where;
     }
 
     private List<String> getExistAmenityList(AmenityRequestDto data) {
@@ -76,10 +70,11 @@ public class AmenityService {
         return trueList;
     }
 
+
     //더미데이터 넣기
     public void injectDummyData() {
         Random r = new Random();
-        r.setSeed(20220826);
+        r.setSeed(2022);
         try {
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
             em.createQuery("DELETE FROM Amenity").executeUpdate();
@@ -94,7 +89,7 @@ public class AmenityService {
 
     public AmenityResponseDto findAmenityDataByPrkplceNo(String prkplceNo) {
         return amenityRepository.findByPark(parkService.findParkingLotByNo(prkplceNo))
-                .orElseThrow(()-> new NoSuchElementException("Amenity with prkplceNo:" + prkplceNo + " does not exist"))
+                .orElseThrow(() -> new NoSuchElementException("Amenity with prkplceNo:" + prkplceNo + " does not exist"))
                 .toResponseDto();
     }
 }
