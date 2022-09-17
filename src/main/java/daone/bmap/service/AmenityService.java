@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional
@@ -58,15 +59,13 @@ public class AmenityService {
     }
 
     private List<String> getExistAmenityList(AmenityRequestDto data) {
-        List<String> trueList = new ArrayList<>();
-        if (data.isElevator()) trueList.add("a.elevator");
-        if (data.isWideExit()) trueList.add("a.wideExit");
-        if (data.isRamp()) trueList.add("a.ramp");
-        if (data.isAccessRoads()) trueList.add("a.accessRoads");
-        if (data.isWheelchairLift()) trueList.add("a.wheelchairLift");
-        if (data.isBrailleBlock()) trueList.add("a.brailleBlock");
-        if (data.isExGuidance()) trueList.add("a.exGuidance");
-        if (data.isExTicketOffice()) trueList.add("a.exTicketOffice");
+        List<String> trueList = data.toMap()
+                .entrySet()
+                .stream()
+                .filter(Map.Entry::getValue) //m -> m.getValue().equals(true)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
         return trueList;
     }
 
