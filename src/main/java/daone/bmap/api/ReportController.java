@@ -6,6 +6,7 @@ import daone.bmap.dto.report.ReportRequestDto;
 import daone.bmap.dto.report.ReportResponseDto;
 import daone.bmap.service.ParkService;
 import daone.bmap.service.ReportService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import static daone.bmap.dto.report.ReportResponseDto.getReportResponseDto;
 
 @Slf4j
 @RequiredArgsConstructor
+@Api(tags = { "신고 관련 API" })
 @RequestMapping("/report")
 @RestController
 public class ReportController {
