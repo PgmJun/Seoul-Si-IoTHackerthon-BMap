@@ -7,6 +7,7 @@ import daone.bmap.dto.park.ParkDto;
 import daone.bmap.dto.park.ParkLocSearchDto;
 import daone.bmap.service.AmenityService;
 import daone.bmap.service.ParkService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
+@Api(tags = { "주차장 관련 API" })
 @RequestMapping("/park")
 @RestController
 public class ParkController {
