@@ -1,6 +1,5 @@
 package daone.bmap.dto.park;
 
-import daone.bmap.domain.park.Park;
 import lombok.Getter;
 import lombok.Setter;
 
