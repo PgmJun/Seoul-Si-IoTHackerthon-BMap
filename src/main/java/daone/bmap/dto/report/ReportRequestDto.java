@@ -1,7 +1,5 @@
 package daone.bmap.dto.report;
 
-import daone.bmap.domain.report.Report;
-import daone.bmap.domain.report.ReportType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
