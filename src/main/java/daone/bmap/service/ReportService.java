@@ -43,11 +43,10 @@ public class ReportService {
     private List<ReportResponseDto> setPrkplceNo(List<Report> reportList) {
         try {
             List<ReportResponseDto> result = new ArrayList<>();
-            int i = 0;
             for (Report r : reportList) {
-                result.add(ReportMapper.mapper.reportEntityToDto(r));
-                result.get(i).setPrkplceNo(reportList.get(i).getPark().getPrkplceNo());
-                i++;
+                ReportResponseDto reportResponseDto = ReportMapper.mapper.reportEntityToDto(r);
+                reportResponseDto.setPrkplceNo(r.getPark().getPrkplceNo());
+                result.add(reportResponseDto);
             }
             return result;
         } catch (Exception e) {
