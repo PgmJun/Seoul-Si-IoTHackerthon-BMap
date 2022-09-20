@@ -28,7 +28,8 @@ name: Deploy to Amazon ECS
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
 
 env:
   AWS_REGION: ap-northeast-2                   # set this to your preferred AWS region, e.g. us-west-1
@@ -52,6 +53,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+
+    - name: Build with Gradle
+      run: ./gradlew clean build -x test
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
