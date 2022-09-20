@@ -4,6 +4,11 @@ plugins {
 	id 'java'
 }
 
+// build시 plain.jar 생성 안 함
+jar {
+	enabled = false
+}
+
 group = 'daone'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
