@@ -12,8 +12,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     //reportId로 Report 찾기
     Optional<Report> findReportByreportId(Long reportId);
 
-    List<Report> findReportByReportType(ReportType reportType);
-
     //모든 Report 찾기
     List<Report> findAll();
 }

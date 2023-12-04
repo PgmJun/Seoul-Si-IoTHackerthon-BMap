@@ -1,16 +1,27 @@
 package daone.bmap.domain.amenity;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 import daone.bmap.domain.park.Park;
 import daone.bmap.dto.amenity.AmenityResponseDto;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 
-import static javax.persistence.FetchType.LAZY;
-
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 @Entity
 public class Amenity {
@@ -19,51 +30,55 @@ public class Amenity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long amenityId;
 
-    @OneToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "prkplceNo")
     private Park park;
 
     @Column(name = "elevator")
-    private boolean elevator;   // 엘리베이터
+    private Boolean hasElevator;   // 엘리베이터
 
     @Column(name = "wideExit")
-    private boolean wideExit;
+    private Boolean hasWideExit;
+
     @Column(name = "ramp")
-    private boolean ramp;   // 경사로
+    private Boolean hasRamp;   // 경사로
 
     @Column(name = "accessRoads")
-    private boolean accessRoads;    // 접근로
+    private Boolean hasAccessRoads;    // 접근로
 
     @Column(name = "wheelchairLift")
-    private boolean wheelchairLift;    // 휠체어 리프트
+    private Boolean hasWheelchairLift;    // 휠체어 리프트
 
     @Column(name = "brailleBlock")
-    private boolean brailleBlock;    // 점자 블록
+    private Boolean hasBrailleBlock;    // 점자 블록
 
     @Column(name = "exGuidance")
-    private boolean exGuidance;    // 시각장애인 유도 안내
+    private Boolean hasExGuidance;    // 시각장애인 유도 안내
 
     @Column(name = "exTicketOffice")
-    private boolean exTicketOffice;    // 장애인 전용 매표소
+    private Boolean hasExTicketOffice;    // 장애인 전용 매표소
 
     @Column(name = "exRestroom")
-    private boolean exRestroom;
+    private Boolean hasExRestroom;
 
-    @Builder
-    public Amenity(Park park, boolean elevator, boolean wideExit, boolean ramp, boolean accessRoads, boolean wheelchairLift, boolean brailleBlock, boolean exGuidance, boolean exTicketOffice, boolean exRestroom) {
-        this.park = park;
-        this.elevator = elevator;
-        this.wideExit = wideExit;
-        this.ramp = ramp;
-        this.accessRoads = accessRoads;
-        this.wheelchairLift = wheelchairLift;
-        this.brailleBlock = brailleBlock;
-        this.exGuidance = exGuidance;
-        this.exTicketOffice = exTicketOffice;
-        this.exRestroom = exRestroom;
+    public AmenityResponseDto toResponseDto() {
+        return new AmenityResponseDto(hasElevator, hasWideExit, hasRamp, hasAccessRoads, hasWheelchairLift,
+                hasBrailleBlock, hasExGuidance, hasExTicketOffice, hasExRestroom);
     }
 
-    public AmenityResponseDto toResponseDto(){
-        return new AmenityResponseDto(elevator,wideExit,ramp,accessRoads,wheelchairLift,brailleBlock,exGuidance,exTicketOffice,exRestroom);
+    public static Amenity of(Park park, boolean hasElevator, boolean hasWideExit, boolean hasRamp,
+                             boolean hasAccessRoads, boolean hasWheelchairLift, boolean hasBrailleBlock, boolean hasExGuidance, boolean hasExTicketOffice, boolean hasExRestroom) {
+        return builder()
+                .park(park)
+                .hasElevator(hasElevator)
+                .hasWideExit(hasWideExit)
+                .hasRamp(hasRamp)
+                .hasAccessRoads(hasAccessRoads)
+                .hasWheelchairLift(hasWheelchairLift)
+                .hasBrailleBlock(hasBrailleBlock)
+                .hasExGuidance(hasExGuidance)
+                .hasExTicketOffice(hasExTicketOffice)
+                .hasExRestroom(hasExRestroom)
+                .build();
     }
 }

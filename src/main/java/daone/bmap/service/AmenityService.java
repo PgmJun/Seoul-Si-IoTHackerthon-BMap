@@ -8,13 +8,12 @@ import daone.bmap.domain.park.ParkRepository;
 import daone.bmap.dto.amenity.AmenityRequestDto;
 import daone.bmap.dto.amenity.AmenityResponseDto;
 import daone.bmap.dto.park.ParkDto;
-import daone.bmap.dto.park.ParkMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,8 +38,7 @@ public class AmenityService {
             List<Amenity> amenityList = em.createQuery(createWhereQuery(existAmenityList)).setParameter("parks",parkList).getResultList();
             amenityList.forEach(amenity ->{
                 Park park = parkService.findParkingLotByNo(amenity.getPark().getPrkplceNo());
-                ParkDto parkDto = ParkMapper.mapper.parkEntityToDto(park);
-                result.add(parkDto);
+                result.add(ParkDto.fromEntity(park));
             });
 
         } catch (Exception e) {
@@ -80,7 +78,7 @@ public class AmenityService {
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
 
             List<Park> parkList = parkRepository.findAll();
-            parkList.forEach(p -> amenityRepository.save(new Amenity(p, r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean())));
+            parkList.forEach(p -> amenityRepository.save(Amenity.of(p, r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean(), r.nextBoolean())));
         } catch (Exception e) {
             throw e;
         }
@@ -90,5 +88,7 @@ public class AmenityService {
         return amenityRepository.findByPark(parkService.findParkingLotByNo(prkplceNo))
                 .orElseThrow(() -> new NoSuchElementException("Amenity with prkplceNo:" + prkplceNo + " does not exist"))
                 .toResponseDto();
+
+
     }
 }

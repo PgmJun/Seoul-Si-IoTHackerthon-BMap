@@ -1,12 +1,12 @@
 package daone.bmap.tools;
 
 import daone.bmap.domain.park.Park;
+import jakarta.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,8 +111,8 @@ public class ApiConnector {
                     .spcmnt(jsonObject.getString("spcmnt"))
                     .institutionNm(jsonObject.getString("institutionNm"))
                     .phoneNumber(jsonObject.getString("phoneNumber"))
-                    .latitude(latitude)
-                    .longitude(longitude)
+                    .latitude(Double.valueOf(latitude))
+                    .longitude(Double.valueOf(longitude))
                     .referenceDate(jsonObject.getString("referenceDate"))
                     .insttCode(jsonObject.getString("insttCode"))
                     .build();
@@ -123,9 +123,7 @@ public class ApiConnector {
 
     private boolean checkDuplicate(ArrayList<Park> parks, String prkplceNo) {
         return parks.stream()
-                .filter(p -> p.getPrkplceNo().equals(prkplceNo))
-                .findAny()
-                .isPresent();
+                .anyMatch(p -> p.getPrkplceNo().equals(prkplceNo));
     }
 
     private static JSONArray getItems(JSONObject connResult) {
@@ -140,7 +138,6 @@ public class ApiConnector {
         while ((line = br.readLine()) != null) {
             sb.append(line);
         }
-        //System.out.println("sb.toString() = " + sb.toString());
 
         String jsonString = sb.toString();
 

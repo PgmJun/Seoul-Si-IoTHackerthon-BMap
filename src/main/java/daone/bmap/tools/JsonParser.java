@@ -5,7 +5,6 @@ import daone.bmap.domain.park.ParkRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.List;
 

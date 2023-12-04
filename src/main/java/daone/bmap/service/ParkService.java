@@ -1,21 +1,19 @@
 package daone.bmap.service;
 
-import com.opencsv.exceptions.CsvValidationException;
 import daone.bmap.domain.park.Park;
 import daone.bmap.domain.park.ParkRepository;
 import daone.bmap.dto.park.ParkDto;
-import daone.bmap.dto.park.ParkMapper;
 import daone.bmap.tools.JsonParser;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
+import jakarta.persistence.EntityManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Transactional
@@ -33,11 +31,17 @@ public class ParkService {
     }
 
     public List<ParkDto> findParkingLotByAddr(String address, String lat, String lng) {
-        return getParkDtoList(parkRepository.findByAddr("%" + address + "%", lat, lng));
+        List<Park> parks = parkRepository.findByAddr("%" + address + "%", lat, lng);
+        return parks.stream()
+                .map(ParkDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public List<ParkDto> findParkingLotDtoByLoc(Double lat, Double lng) {
-        return getParkDtoList(parkRepository.findByLocation(lat, lng));
+        List<Park> parks = parkRepository.findByLocation(lat, lng);
+        return parks.stream()
+                .map(ParkDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     public List<Park> findParkingLotByLoc(Double lat, Double lng) {
@@ -45,10 +49,12 @@ public class ParkService {
     }
 
     public List<ParkDto> findParkingLotAll() {
-        return getParkDtoList(parkRepository.findAll());
+        List<Park> parks = parkRepository.findAll();
+        return parks.stream()
+                .map(ParkDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
-    @Transactional
     public void saveParkData() throws IOException {
         try {
             em.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
@@ -60,17 +66,4 @@ public class ParkService {
             throw e;
         }
     }
-
-    //parkList 받아온 뒤 parkDtoList로 만들어 반환
-    private List<ParkDto> getParkDtoList(List<Park> parkList) {
-        try {
-            List<ParkDto> result = new ArrayList<>();
-            parkList.forEach(p -> result.add(ParkMapper.mapper.parkEntityToDto(p)));
-            return result;
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-
 }

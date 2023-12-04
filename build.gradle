@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.3'
+	id 'org.springframework.boot' version '3.0.5'
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
 	id 'java'
 }
@@ -11,7 +11,7 @@ jar {
 
 group = 'daone'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 configurations {
 	compileOnly {
@@ -24,36 +24,29 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation "org.springframework.boot:spring-boot-starter-validation"
 	implementation 'com.google.code.gson:gson:2.9.0'
 	implementation 'com.opencsv:opencsv:5.6'
 
-	//Lombok
-	compileOnly 'org.projectlombok:lombok'
+	//lombok
 	annotationProcessor 'org.projectlombok:lombok'
-
-	// aws secrets
-	//implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap:3.1.3'
-	//implementation 'org.springframework.cloud:spring-cloud-starter-aws-secrets-manager-config:2.2.6.RELEASE'
-	//implementation 'commons-io:commons-io:2.11.0'
+	compileOnly 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok'
+	testAnnotationProcessor 'org.projectlombok:lombok'
 
 	//JSON
 	implementation group: 'org.json', name: 'json', version: '20230227'
 
+	//jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
 	//DB
-	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'mysql:mysql-connector-java'
+	implementation 'mysql:mysql-connector-java:8.0.28'
 
-	// springfox-swagger-ui
-	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
-	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
-	implementation("io.swagger:swagger-annotations:1.5.21")
-	implementation("io.swagger:swagger-models:1.5.21")
-
-	//MapStruct
-	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+	// swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+
+  mysql:
+    image: mysql/mysql-server:8.0
+    container_name: bmap-local-mysql
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_USER: "bmap"
+      MYSQL_PASSWORD: "bmap"
+      MYSQL_DATABASE: "bmap"
+    ports:
+      - "3306:3306"
+    command:
+      - "mysqld"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"

@@ -13,7 +13,7 @@ RUN ./gradlew bootjar
 
 
 #builder에서 jar파일 복사 및 실행
-FROM openjdk:11-jre-slim
+FROM openjdk:17-jre-slim
 # heurit-refactoring-0.0.1-SNAPSHOT.jar 이라는 이름으로 현재 이미지에 저장한다.
 COPY --from=builder build/libs/*.jar app.jar
 VOLUME /tmp
